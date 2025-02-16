@@ -10,11 +10,11 @@ from PyQt5.QtWidgets import (
 )
 from PyQt5.QtGui import QIcon, QKeySequence, QFontDatabase, QFont
 from PyQt5.QtCore import Qt, QEvent
-from QNameLineEdit import QNameLineEdit
-from QUrlLineEdit import QUrlLineEdit
-from QHeadersTextEdit import QHeadersTextEdit
-from QBodyTextEdit import QBodyTextEdit
-from QResponseTextEdit import QResponseTextEdit
+from components.QNameLineEdit import QNameLineEdit
+from components.QUrlLineEdit import QUrlLineEdit
+from components.QHeadersTextEdit import QHeadersTextEdit
+from components.QBodyTextEdit import QBodyTextEdit
+from components.QResponseTextEdit import QResponseTextEdit
 from fonts import load_custom_font
 from styles import set_theme, get_styles, get_theme
 from settings_dialog import SettingsDialog
@@ -24,7 +24,7 @@ from splash_dialog import open_splash_screen
 import subprocess
 from connection import request
 from helpers import pretty_response_code
-from QTabTitle import QTabTitle
+from components.QTabTitle import QTabTitle
 from resources import resource_path
 
 QApplication.setAttribute(Qt.AA_EnableHighDpiScaling)

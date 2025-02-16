@@ -10,11 +10,11 @@ from PyQt6.QtWidgets import (
 )
 from PyQt6.QtGui import QIcon, QKeySequence, QFontDatabase, QFont, QGuiApplication
 from PyQt6.QtCore import Qt, QEvent
-from QNameLineEdit import QNameLineEdit
-from QUrlLineEdit import QUrlLineEdit
-from QHeadersTextEdit import QHeadersTextEdit
-from QBodyTextEdit import QBodyTextEdit
-from QResponseTextEdit import QResponseTextEdit
+from components.QNameLineEdit import QNameLineEdit
+from components.QUrlLineEdit import QUrlLineEdit
+from components.QHeadersTextEdit import QHeadersTextEdit
+from components.QBodyTextEdit import QBodyTextEdit
+from components.QResponseTextEdit import QResponseTextEdit
 from fonts import load_custom_font
 from styles import set_theme, get_styles, get_theme
 from settings_dialog import SettingsDialog
