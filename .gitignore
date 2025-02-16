@@ -1,0 +1,9 @@
+.venv
+__pycache__
+tests/demoCA
+collections/*
+settings.json
+build
+dist
+*.spec
+*.toc
