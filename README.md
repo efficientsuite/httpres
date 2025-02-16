@@ -1,4 +1,4 @@
-# httpRes - Open Source HTTP Client
+# httpRes - Secure Open-Source HTTP Client
 
 ## Pre-built Binaries:
 
