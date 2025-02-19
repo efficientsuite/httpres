@@ -1,5 +1,8 @@
 # httpRes - Secure Open-Source HTTP Client
 
+![Splash Banner](images/splash_banner.png)
+
+
 ## Pre-built Binaries:
 
 Windows x64:
