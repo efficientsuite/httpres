@@ -32,4 +32,4 @@ https://httpres.com
 https://efficientsuite.com
 
 ## Screenshots
-![Splash Banner](images/screenshot1.png)
+![Splash Banner](https://httpres.com/images/screenshot1.png)
