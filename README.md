@@ -15,7 +15,7 @@ $ ./_run.sh
 
 ## Download Latest Changes:
 ```sh
-$ ./_update_.sh
+$ ./_update.sh
 ```
 
 ## Build a Release (exe):
