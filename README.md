@@ -13,7 +13,12 @@ $ ./_install.sh
 $ ./_run.sh
 ```
 
-## Build a Release:
+## Download Latest Changes:
+```sh
+$ ./_update_.sh
+```
+
+## Build a Release (exe):
 ```sh
 $ pip install pyinstaller
 $ ./_build_release.sh
