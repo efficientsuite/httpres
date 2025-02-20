@@ -1,5 +1,5 @@
-from PyQt5.QtWidgets import QWidget, QHBoxLayout, QLabel, QPushButton, QLineEdit, QVBoxLayout, QSizePolicy, QGridLayout
-from PyQt5.QtCore import Qt
+from PyQt6.QtWidgets import QWidget, QHBoxLayout, QLabel, QPushButton, QLineEdit, QVBoxLayout, QSizePolicy, QGridLayout
+from PyQt6.QtCore import Qt
 
 class TagChip(QWidget):
     def __init__(self, text, remove_callback, parent=None):
@@ -10,7 +10,7 @@ class TagChip(QWidget):
     
     def init_ui(self):
         grid = QGridLayout(self)
-        grid.setSizeConstraint(QGridLayout.SetFixedSize)  # Size the widget to its contents
+        grid.setSizeConstraint(QGridLayout.SizeConstraint.SetFixedSize)  # Size the widget to its contents
         grid.setContentsMargins(4, 2, 4, 2)
         grid.setSpacing(0)
         
@@ -18,11 +18,11 @@ class TagChip(QWidget):
         grid.addWidget(self.label, 0, 0)
         
         self.remove_button = QPushButton("x", self)
-        self.remove_button.setSizePolicy(QSizePolicy.Fixed, QSizePolicy.Fixed)
+        self.remove_button.setSizePolicy(QSizePolicy.Policy.Fixed, QSizePolicy.Policy.Fixed)
         self.remove_button.setFlat(True)
         self.remove_button.clicked.connect(lambda: self.remove_callback(self))
         # Place the remove button in the same cell, aligned top-right
-        grid.addWidget(self.remove_button, 0, 0, alignment=Qt.AlignRight | Qt.AlignTop)
+        grid.addWidget(self.remove_button, 0, 0, alignment=Qt.AlignmentFlag.AlignRight | Qt.AlignmentFlag.AlignTop)
         
         self.setStyleSheet("""
             QWidget {
@@ -66,7 +66,7 @@ class TaggingWidget(QWidget):
         # Layout to display tag chips
         self.tag_layout = QHBoxLayout()
         self.tag_layout.setSpacing(5)
-        self.tag_layout.setAlignment(Qt.AlignLeft)  # Align all tags to the left
+        self.tag_layout.setAlignment(Qt.AlignmentFlag.AlignLeft)  # Align all tags to the left
         main_layout.addLayout(self.tag_layout)
         
         # QLineEdit to add new tags

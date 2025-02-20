@@ -2,14 +2,14 @@ import sys
 import json
 import weakref
 import uuid
-from PyQt5.QtWidgets import (
+from PyQt6.QtWidgets import (
     QApplication, QWidget, QVBoxLayout, QHBoxLayout, QLabel,
     QPushButton, QComboBox, QMessageBox, QTreeWidget, QDialog,
     QTreeWidgetItem, QInputDialog, QScrollArea, QFrame,
-    QMenu, QTabWidget, QSplitter, QSizePolicy, QShortcut, QPlainTextEdit, QTabBar, QStatusBar
+    QMenu, QTabWidget, QSplitter, QSizePolicy, QPlainTextEdit, QTabBar, QStatusBar
 )
-from PyQt5.QtGui import QIcon, QKeySequence, QFontDatabase, QFont
-from PyQt5.QtCore import Qt, QEvent
+from PyQt6.QtGui import QIcon, QKeySequence, QFontDatabase, QFont, QShortcut
+from PyQt6.QtCore import Qt, QEvent
 from components.QNameLineEdit import QNameLineEdit
 from components.QUrlLineEdit import QUrlLineEdit
 from components.QHeadersTextEdit import QHeadersTextEdit
@@ -27,8 +27,7 @@ from helpers import pretty_response_code
 from components.QTabTitle import QTabTitle
 from resources import resource_path
 
-QApplication.setAttribute(Qt.AA_EnableHighDpiScaling)
-    
+
 class HttpClient(QWidget):
     def __init__(self):
         super().__init__()
@@ -37,7 +36,6 @@ class HttpClient(QWidget):
         self.loaded_item = None
         import_from_file(self, QApplication.instance().last_collection, True)
         self.tree_widget.expandAll()
-      
 
     def init_ui(self):
         self.setWindowTitle('httpRes - Secure HTTP Client v1.0.0')
@@ -45,28 +43,28 @@ class HttpClient(QWidget):
         load_custom_font("Roboto-Regular.ttf")
         load_custom_font("RobotoMono-Regular.ttf")
         self.resize(1600, 900)
-        screen_size = QApplication.desktop().screenGeometry()
+        screen_size = QApplication.primaryScreen().geometry()
         if self.width() > screen_size.width() * 0.7 or self.height() > screen_size.height() * 0.7:
             self.resize(int(screen_size.width() * 0.7), int(screen_size.height() * 0.7))
 
-        self.move(QApplication.desktop().screen().rect().center() - self.rect().center())
+        self.move(QApplication.primaryScreen().availableGeometry().center() - self.rect().center())
 
         # Main layout
         main_layout = QHBoxLayout()
-        
+
         # Tree Widget for organizing requests and folders
         self.tree_widget = QTreeWidget(self)
         self.tree_widget.setHeaderHidden(True)
         self.tree_widget.itemClicked.connect(self.on_tree_item_clicked)
-        self.tree_widget.setContextMenuPolicy(Qt.CustomContextMenu)
+        self.tree_widget.setContextMenuPolicy(Qt.ContextMenuPolicy.CustomContextMenu)
         self.tree_widget.customContextMenuRequested.connect(self.open_context_menu)
         QApplication.instance().tree_widget = self.tree_widget
-        
+
         # Enable drag and drop
         self.tree_widget.setDragEnabled(True)
         self.tree_widget.setAcceptDrops(True)
         self.tree_widget.setDropIndicatorShown(True)
-        self.tree_widget.setDragDropMode(QTreeWidget.InternalMove)
+        self.tree_widget.setDragDropMode(QTreeWidget.DragDropMode.InternalMove)
 
         # Connect the item expanded and collapsed signals
         self.tree_widget.itemExpanded.connect(self.on_item_expanded)
@@ -75,13 +73,8 @@ class HttpClient(QWidget):
         # Wrap the tree widget in a scroll area
         self.scroll_area = QScrollArea(self)
         self.scroll_area.setWidgetResizable(True)
-        self.scroll_area.setFrameShape(QFrame.NoFrame)
+        self.scroll_area.setFrameShape(QFrame.Shape.NoFrame)
         self.scroll_area.setWidget(self.tree_widget)
-
-        # Set maximum width for the tree widget and scroll area
-        #max_width = 350
-        #self.tree_widget.setMaximumWidth(max_width)
-        #estself.scroll_area.setMaximumWidth(max_width)
 
         # Create a container widget for the buttons
         button_container = QWidget(self)
@@ -92,14 +85,14 @@ class HttpClient(QWidget):
         self.settings_button.setFixedWidth(150)
         self.settings_button.clicked.connect(self.open_settings)
         button_layout.addWidget(self.settings_button)
-        button_layout.setAlignment(self.settings_button, Qt.AlignCenter)
+        button_layout.setAlignment(self.settings_button, Qt.AlignmentFlag.AlignCenter)
 
         # Hyperlink to the GitHub repository
         link = f"<a href=\"https://httpres.com\" style=\"color: {get_theme()['accent1']};\">Visit httpRes.com</a>"
         self.website_link = QLabel(link, self)
         self.website_link.setOpenExternalLinks(True)
         button_layout.addWidget(self.website_link)
-        button_layout.setAlignment(self.website_link, Qt.AlignCenter)
+        button_layout.setAlignment(self.website_link, Qt.AlignmentFlag.AlignCenter)
 
         # Tab widget for multiple requests
         self.tab_widget = QTabWidget(self)
@@ -112,10 +105,10 @@ class HttpClient(QWidget):
         left_layout.addWidget(self.scroll_area)
         left_layout.addWidget(button_container)
 
-        # pull the left_layout up a bit
+        # Pull the left_layout up a bit
         left_layout.setContentsMargins(0, 0, 0, 0)
-        
-        splitter = QSplitter(Qt.Horizontal)
+
+        splitter = QSplitter(Qt.Orientation.Horizontal)
         splitter.addWidget(left_container)
         splitter.addWidget(self.tab_widget)
         splitter.setStretchFactor(0, 0)
@@ -150,30 +143,26 @@ class HttpClient(QWidget):
         # Shortcut for closing tabs with Ctrl+W
         close_tab_shortcut = QShortcut(QKeySequence("Ctrl+W"), self)
         close_tab_shortcut.activated.connect(lambda: self.close_tab(self.tab_widget.currentIndex()))
-            
 
     def eventFilter(self, source, event):
         '''Override the eventFilter method to handle middle-click tab close.'''
-        if event.type() == QEvent.MouseButtonPress and source is self.tab_widget.tabBar():
-            if event.button() == Qt.MiddleButton:
-                tab_index = source.tabAt(event.pos())
+        if event.type() == QEvent.Type.MouseButtonPress and source is self.tab_widget.tabBar():
+            if event.button() == Qt.MouseButton.MiddleButton:
+                tab_index = source.tabAt(event.position())
                 if tab_index != -1:
                     self.tab_widget.removeTab(tab_index)
                     return True
         return super().eventFilter(source, event)
-    
 
     def on_item_expanded(self, item):
         """Change the icon of the folder to indicate it is open."""
         if item.data(1, 0) == 'folder':
             item.setIcon(0, QIcon(resource_path('images/opened_folder.png')))  # Set the open folder icon
 
-
     def on_item_collapsed(self, item):
         """Change the icon of the folder to indicate it is closed."""
         if item.data(1, 0) == 'folder':
             item.setIcon(0, QIcon(resource_path('images/closed_folder.png')))  # Set the closed folder icon
-
 
     def open_context_menu(self, position):
         """Open the context menu at the given position."""
@@ -196,7 +185,7 @@ class HttpClient(QWidget):
         remove_action.triggered.connect(self.remove_item)
 
         # Show the context menu at the cursor position
-        menu.exec_(self.tree_widget.viewport().mapToGlobal(position))
+        menu.exec(self.tree_widget.viewport().mapToGlobal(position))
 
     def rename_item(self):
         """Rename the selected item."""
@@ -221,8 +210,7 @@ class HttpClient(QWidget):
                         name_line = tab.findChild(QNameLineEdit)
                         if name_line:
                             name_line.setText(new_name)
-                        # continue checking in case multiple tabs match
-            
+
     def add_folder(self):
         """Add a new folder to the tree."""
         folder_name, ok = QInputDialog.getText(self, 'Add Folder', 'Enter folder name:')
@@ -231,7 +219,6 @@ class HttpClient(QWidget):
             folder_item.setIcon(0, QIcon(resource_path('images/closed_folder.png')))  # Set folder icon
             folder_item.setData(1, 0, 'folder')  # Set type to folder
             self.tree_widget.addTopLevelItem(folder_item)
-
 
     def add_request(self):
         """Add a new HTTP request to the selected folder."""
@@ -244,7 +231,7 @@ class HttpClient(QWidget):
             request_data = {
                 'url': '',
                 'method': 'GET',
-                'headers':'''Accept: application/json\nContent-Type: application/json''',  # Store headers as plain text
+                'headers': '''Accept: application/json\nContent-Type: application/json''',  # Store headers as plain text
                 'body': '',
                 'id': str(uuid.uuid4())  # <-- unique id added
             }
@@ -253,7 +240,6 @@ class HttpClient(QWidget):
             request_item.setData(1, 0, 'request')  # Set type to request
             request_item.setData(2, 0, request_data)  # Store request data in a different column
             self.selected_item.addChild(request_item)
-
 
     def remove_item(self):
         """Remove the selected item from the tree."""
@@ -266,7 +252,6 @@ class HttpClient(QWidget):
                 if parent:
                     parent.removeChild(self.selected_item)
 
-
     def load_custom_font(self, font_path):
         """Load a custom font from a file."""
         font_id = QFontDatabase.addApplicationFont(font_path)
@@ -276,7 +261,6 @@ class HttpClient(QWidget):
                 custom_font = font_families[0]
                 QApplication.setFont(QFont(custom_font))
 
-
     def on_tree_item_clicked(self, item):
         """Handle tree item selection."""
         if item.data(1, 0) == 'folder':
@@ -285,7 +269,6 @@ class HttpClient(QWidget):
             self.selected_item = item
             self.loaded_item = item  # Set the loaded request item
             self.open_request_in_tab(item)
-
 
     def open_request_in_tab(self, item):
         """Open the request in a new tab."""
@@ -303,7 +286,7 @@ class HttpClient(QWidget):
             tab.request_id = request_data.get('id')  # <-- assign unique id to the tab
             tab_layout = QVBoxLayout(tab)
             tab_layout.setContentsMargins(5, 5, 5, 5)
-            tab_layout.setAlignment(Qt.AlignTop)
+            tab_layout.setAlignment(Qt.AlignmentFlag.AlignTop)
 
             method_combo = QComboBox(tab)
             method_combo.addItems(['GET', 'POST', 'PUT', 'DELETE'])
@@ -314,7 +297,7 @@ class HttpClient(QWidget):
             url_input.setText(request_data.get('url', ''))
             url_input.setPlaceholderText('Enter URL...')
             url_input.setFixedHeight(42)
-            url_input.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Fixed)
+            url_input.setSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Fixed)
 
             auth_button = QPushButton('🔒 Configure', tab)
             auth_button.setFixedHeight(42)
@@ -351,7 +334,7 @@ class HttpClient(QWidget):
             body_input = QBodyTextEdit(tab)  # Use the custom class here
             body_input.setPlainText(request_data.get('body', ''))
             body_input.setPlaceholderText('Enter request body here (for POST/PUT requests)')
-            body_input.setSizePolicy(QSizePolicy.Minimum, QSizePolicy.Expanding)
+            body_input.setSizePolicy(QSizePolicy.Policy.Minimum, QSizePolicy.Policy.Expanding)
             body_layout = QVBoxLayout()
             body_layout.setContentsMargins(0, 0, 0, 0)
             body_layout.addWidget(body_label)
@@ -368,7 +351,7 @@ class HttpClient(QWidget):
             response_label = QLabel('Response:')
             response_output = QResponseTextEdit(tab)
             response_output.setPlaceholderText('Response will be displayed here...')
-            response_output.setSizePolicy(QSizePolicy.Minimum, QSizePolicy.Expanding)
+            response_output.setSizePolicy(QSizePolicy.Policy.Minimum, QSizePolicy.Policy.Expanding)
 
             # Create layout for response
             response_layout = QVBoxLayout()
@@ -380,7 +363,7 @@ class HttpClient(QWidget):
             response_widget.setLayout(response_layout)
 
             # Create a splitter to allow resizing between headers/body and response
-            splitter = QSplitter(Qt.Horizontal)
+            splitter = QSplitter(Qt.Orientation.Horizontal)
             splitter.addWidget(headers_body_widget)
             splitter.addWidget(response_widget)
 
@@ -412,7 +395,6 @@ class HttpClient(QWidget):
             # Set the newly created tab as the current tab
             self.tab_widget.setCurrentIndex(index)
 
-
     def set_dirty(self, tab, weak_item):
         """Mark the current tab as dirty and update the tab title."""
         tab.dirty = True
@@ -430,12 +412,11 @@ class HttpClient(QWidget):
                 if tab_title and not tab_title.endswith('*'):
                     tab_title += '*'  # Append '*' to indicate dirty state
                 if tab_title:
-                    self.tab_widget.tabBar().setTabButton(current_index, QTabBar.ButtonPosition.LeftSide, QTabTitle(tab_title)) # Set the tab text as a string
+                    self.tab_widget.tabBar().setTabButton(current_index, QTabBar.ButtonPosition.LeftSide, QTabTitle(tab_title))  # Set the tab text as a string
                 else:
-                    self.tab_widget.tabBar().setTabButton(current_index, QTabBar.ButtonPosition.LeftSide, QTabTitle('Untitled*')) # Set the tab text as a string
+                    self.tab_widget.tabBar().setTabButton(current_index, QTabBar.ButtonPosition.LeftSide, QTabTitle('Untitled*'))  # Set the tab text as a string
             else:
                 print("Item has been deleted.")
-
 
     def save_current_tab(self):
         """Save the current tab's request data and export automatically."""
@@ -469,16 +450,14 @@ class HttpClient(QWidget):
             # Remove the asterisk from the tab title
             tab_title = self.loaded_item.text(0)
             current_tab_index = self.tab_widget.indexOf(current_tab)
-            self.tab_widget.tabBar().setTabButton(current_tab_index, QTabBar.ButtonPosition.LeftSide, QTabTitle(tab_title)) # Set the tab text as a string
+            self.tab_widget.tabBar().setTabButton(current_tab_index, QTabBar.ButtonPosition.LeftSide, QTabTitle(tab_title))  # Set the tab text as a string
 
             export_to_file(self, QApplication.instance().last_collection)
             QMessageBox.information(self, 'Success', 'Request saved successfully!')
 
-
     def close_tab(self, index):
         """Close the tab at the given index."""
         self.tab_widget.removeTab(index)
-
 
     def send_request(self):
         """Send the HTTP request with certificate and proxy handling."""
@@ -497,12 +476,12 @@ class HttpClient(QWidget):
         method = method_combo.currentText()
         headers = headers_input.toPlainText()
         body = body_input.toPlainText()
-        response_output.setLineWrapMode(QPlainTextEdit.NoWrap)
+        response_output.setLineWrapMode(QPlainTextEdit.LineWrapMode.NoWrap)
 
-        # disable send_request_button
+        # Disable send_request_button
         send_request_button.setEnabled(False)
 
-        # show loading message
+        # Show loading message
         response_output.setPlainText('Sending...')
 
         # Get the saved request data from the loaded item
@@ -517,7 +496,7 @@ class HttpClient(QWidget):
 
         try:
             response_code, res, auth_usage_details, curl_command = request(request_data)
-            response_output.setPlainText('') # Clear the loading message
+            response_output.setPlainText('')  # Clear the loading message
             # res is a CompletedProcess object or a dict.
             # check if res is a dict
             stdout = ''
@@ -543,11 +522,11 @@ class HttpClient(QWidget):
                 # Response code
                 response_code = pretty_response_code(response_code)
                 response_output.setPlainText('C̲o̲d̲e̲: ' + response_code + '\n\nD̲a̲t̲a̲:\n\n' + response_output.toPlainText())
-                
+
                 # Extra details
                 if auth_usage_details:
                     response_output.setPlainText(response_output.toPlainText() + '\n\n\nA̲u̲t̲h̲e̲n̲t̲i̲c̲a̲t̲i̲o̲n̲: 🔒\n\n' + auth_usage_details)
-                
+
                 # Error/Connection data
                 if stderr != '':
                     connection_data = stderr
@@ -562,26 +541,24 @@ class HttpClient(QWidget):
                 # Curl command
                 if curl_command:
                     response_output.setPlainText(response_output.toPlainText() + '\n\n\nC̲URL Command Used 🆑\n\n' + ' '.join(curl_command))
-                
+
         except subprocess.CalledProcessError as e:
-            response_output.setLineWrapMode(QPlainTextEdit.WidgetWidth)
+            response_output.setLineWrapMode(QPlainTextEdit.LineWrapMode.WidgetWidth)
             response_output.setPlainText(f'Request failed:\n\n{str(e)}')
         except json.JSONDecodeError:
-            response_output.setLineWrapMode(QPlainTextEdit.WidgetWidth)
+            response_output.setLineWrapMode(QPlainTextEdit.LineWrapMode.WidgetWidth)
             response_output.setPlainText('Invalid JSON in request body.\n\nThe request was not sent.')
         except Exception as e:
-            response_output.setLineWrapMode(QPlainTextEdit.WidgetWidth)
+            response_output.setLineWrapMode(QPlainTextEdit.LineWrapMode.WidgetWidth)
             response_output.setPlainText(f'An unknown error occurred:\n\n{str(e)}')
 
-        # enable send_request_button
+        # Enable send_request_button
         send_request_button.setEnabled(True)
-
 
     def open_settings(self):
         '''Opens a settings dialog with options to add certificates and proxies.'''
         dialog = SettingsDialog(self)
-        dialog.exec_()
-
+        dialog.exec()
 
     def open_auth(self, request_data):
         '''Opens an auth dialog with options to add various types of authentication/authorization.'''
@@ -589,7 +566,7 @@ class HttpClient(QWidget):
             request_data['auth'] = {}
         dialog = AuthDialog(request_data, self)
         dialog.set_data(request_data['auth'])
-        if dialog.exec_() == QDialog.Accepted:
+        if dialog.exec() == QDialog.DialogCode.Accepted:
             data = dialog.get_data()
             request_data['auth'] = data
             # Write the updated request_data back to the loaded item
@@ -602,8 +579,7 @@ class HttpClient(QWidget):
                 index = self.tab_widget.indexOf(current_tab)
                 tab_title = self.tab_widget.tabText(index)
                 if not tab_title.endswith('*'):
-                    self.tab_widget.tabBar().setTabButton(index, QTabBar.ButtonPosition.LeftSide, QTabTitle(tab_title + '*')) # Set the tab text as a string
-
+                    self.tab_widget.tabBar().setTabButton(index, QTabBar.ButtonPosition.LeftSide, QTabTitle(tab_title + '*'))  # Set the tab text as a string
 
     def load_request_data(self, request_data):
         url_input = self.findChild(QUrlLineEdit)
@@ -618,6 +594,9 @@ class HttpClient(QWidget):
         print(f"Headers input text after setting: {headers_input.toPlainText()}")  # Debug statement
 
 
+
+# doesnt work in qt6: QApplication.setAttribute(Qt.ApplicationAttribute.AA_UseHighDpiPixmaps)
+
 if __name__ == '__main__':
     app = QApplication(sys.argv)
     load_settings()
@@ -627,6 +606,6 @@ if __name__ == '__main__':
         QApplication.instance().password = password
         client = HttpClient()
         client.show()
-        sys.exit(app.exec_())
+        sys.exit(app.exec())
     else:
         sys.exit()

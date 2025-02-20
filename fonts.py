@@ -1,6 +1,6 @@
 import os
-from PyQt5.QtWidgets import QApplication
-from PyQt5.QtGui import  QFont, QFontDatabase
+from PyQt6.QtWidgets import QApplication
+from PyQt6.QtGui import QFont, QFontDatabase
 from resources import resource_path
 
 def load_custom_font(font_filename):
@@ -11,5 +11,5 @@ def load_custom_font(font_filename):
         if font_families:
             custom_font = font_families[0]
             font = QFont(custom_font)
-            font.setStyleStrategy(QFont.PreferAntialias)
+            font.setStyleStrategy(QFont.StyleStrategy.PreferAntialias)
             QApplication.setFont(font)

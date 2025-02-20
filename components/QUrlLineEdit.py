@@ -1,5 +1,5 @@
-from PyQt5.QtWidgets import QLineEdit
-from PyQt5.QtCore import Qt
+from PyQt6.QtWidgets import QLineEdit
+from PyQt6.QtCore import Qt
 
 class QUrlLineEdit(QLineEdit):
 
@@ -8,7 +8,7 @@ class QUrlLineEdit(QLineEdit):
         super().__init__(parent)
 
     def keyPressEvent(self, event):
-        if event.key() == Qt.Key_Tab:
+        if event.key() == Qt.Key.Key_Tab:
             # Insert two spaces instead of a tab character
             self.insertPlainText('  ')  # Two spaces
             return  # Prevent the default tab behavior

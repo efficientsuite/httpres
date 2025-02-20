@@ -1,11 +1,11 @@
 import os
 import json
-from PyQt5.QtWidgets import (
+from PyQt6.QtWidgets import (
     QApplication, QWidget, QVBoxLayout, QHBoxLayout, QLabel,
     QPushButton, QLineEdit, QTabWidget, QDialog, QMessageBox, QComboBox
 )
-from PyQt5.QtGui import QIcon
-from PyQt5.QtCore import Qt
+from PyQt6.QtGui import QIcon
+from PyQt6.QtCore import Qt
 from storage import load_settings, save_settings
 from resources import resource_path
 
@@ -13,15 +13,15 @@ class SettingsDialog(QDialog):
     def __init__(self, parent=None):
         super().__init__(parent)
       
-        self.setWindowFlags(self.windowFlags() & ~Qt.WindowContextHelpButtonHint)
+        self.setWindowFlags(self.windowFlags() & ~Qt.WindowType.WindowContextHelpButtonHint)
         self.setWindowTitle('Settings')
         self.setWindowIcon(QIcon(resource_path('images/icon.png')))
         self.resize(350, 380)
          # If the window exceeds 60% of the screen size, resize it to 60% of the screen size
-        screen_size = QApplication.desktop().screenGeometry()
+        screen_size = QApplication.primaryScreen().geometry()
         if self.width() > screen_size.width() * 0.6 or self.height() > screen_size.height() * 0.6:
             self.resize(int(screen_size.width() * 0.6), int(screen_size.height() * 0.6))
-        self.move(QApplication.desktop().screen().rect().center() - self.rect().center())
+        self.move(QApplication.primaryScreen().availableGeometry().center() - self.rect().center())
 
         # Load settings
         self.settings = load_settings()
@@ -44,20 +44,20 @@ class SettingsDialog(QDialog):
         password_layout.setContentsMargins(20, 20, 20, 20)
         self.current_password_label = QLabel('Current Password:')
         self.current_password_input = QLineEdit()
-        self.current_password_input.setEchoMode(QLineEdit.Password)
+        self.current_password_input.setEchoMode(QLineEdit.EchoMode.Password)
         self.new_password_label = QLabel('New Password:')
         self.new_password_input = QLineEdit()
-        self.new_password_input.setEchoMode(QLineEdit.Password)
+        self.new_password_input.setEchoMode(QLineEdit.EchoMode.Password)
         self.confirm_password_label = QLabel('Confirm New Password:')
         self.confirm_password_input = QLineEdit()
-        self.confirm_password_input.setEchoMode(QLineEdit.Password)
+        self.confirm_password_input.setEchoMode(QLineEdit.EchoMode.Password)
         password_layout.addWidget(self.current_password_label)
         password_layout.addWidget(self.current_password_input)
         password_layout.addWidget(self.new_password_label)
         password_layout.addWidget(self.new_password_input)
         password_layout.addWidget(self.confirm_password_label)
         password_layout.addWidget(self.confirm_password_input)
-        password_layout.setAlignment(Qt.AlignTop)
+        password_layout.setAlignment(Qt.AlignmentFlag.AlignTop)
         self.tab_widget.addTab(self.password_tab, 'Password')
         
         # Theme tab
@@ -70,7 +70,7 @@ class SettingsDialog(QDialog):
         self.theme_combo.setCurrentText(QApplication.instance().settings.get('theme', 'Dark'))
         theme_layout.addWidget(self.theme_label)
         theme_layout.addWidget(self.theme_combo)
-        theme_layout.setAlignment(Qt.AlignTop)
+        theme_layout.setAlignment(Qt.AlignmentFlag.AlignTop)
         self.tab_widget.addTab(self.theme_tab, 'Theme')
         
         # Add tab widget to the main layout
@@ -90,7 +90,7 @@ class SettingsDialog(QDialog):
        
         button_layout.addWidget(self.cancel_button)
         button_layout.addWidget(self.save_button)
-        button_layout.setAlignment(Qt.AlignRight)
+        button_layout.setAlignment(Qt.AlignmentFlag.AlignRight)
         main_layout.addLayout(button_layout)
         
         # Set the main layout to the dialog

@@ -1,9 +1,9 @@
-from PyQt5.QtWidgets import (
+from PyQt6.QtWidgets import (
     QApplication, QWidget, QVBoxLayout, QHBoxLayout, QLabel,
     QPushButton, QLineEdit, QTabWidget, QDialog, QComboBox, QStackedWidget, QCheckBox, QTextEdit, QFileDialog, QStyle
 )
-from PyQt5.QtGui import QIcon
-from PyQt5.QtCore import Qt, QSize
+from PyQt6.QtGui import QIcon
+from PyQt6.QtCore import Qt, QSize
 from tag_widget import TaggingWidget
 from resources import resource_path
 
@@ -11,14 +11,14 @@ class AuthDialog(QDialog):
     def __init__(self, request_data, parent=None):
         super().__init__(parent)
         self.request_data = request_data
-        self.setWindowFlags(self.windowFlags() & ~Qt.WindowContextHelpButtonHint)
+        self.setWindowFlags(self.windowFlags() & ~Qt.WindowType.WindowContextHelpButtonHint)
         self.setWindowTitle('Configure Request: ' + request_data.get('name', ''))
         self.setWindowIcon(QIcon(resource_path(('images/icon.png'))))
         self.resize(800, 600)
-        screen_size = QApplication.desktop().screenGeometry()
+        screen_size = QApplication.primaryScreen().geometry()
         if self.width() > screen_size.width() * 0.6 or self.height() > screen_size.height() * 0.6:
             self.resize(int(screen_size.width() * 0.6), int(screen_size.height() * 0.6))
-        self.move(QApplication.desktop().screen().rect().center() - self.rect().center())
+        self.move(QApplication.primaryScreen().availableGeometry().center() - self.rect().center())
         
         # Main layout
         main_layout = QVBoxLayout()
@@ -32,7 +32,7 @@ class AuthDialog(QDialog):
         # Bearer tab
         self.bearer_tab = QWidget()
         bearer_layout = QVBoxLayout(self.bearer_tab)
-        bearer_layout.setAlignment(Qt.AlignTop)  # Align to top
+        bearer_layout.setAlignment(Qt.AlignmentFlag.AlignTop)  # Align to top
         
         bearer_label = QLabel("Bearer Token")
         self.bearer_token_input = QLineEdit(self.bearer_tab)
@@ -43,7 +43,7 @@ class AuthDialog(QDialog):
         # OAuth tab
         self.oauth_tab = QWidget()
         oauth_layout = QVBoxLayout(self.oauth_tab)
-        oauth_layout.setAlignment(Qt.AlignTop)  # Align to top
+        oauth_layout.setAlignment(Qt.AlignmentFlag.AlignTop)  # Align to top
         
         token_url_label = QLabel("Token URL")
         self.token_url_input = QLineEdit(self.oauth_tab)
@@ -64,7 +64,7 @@ class AuthDialog(QDialog):
         # Create input fields for each grant type
         self.client_credentials_widget = QWidget()
         client_credentials_layout = QVBoxLayout(self.client_credentials_widget)
-        client_credentials_layout.setAlignment(Qt.AlignTop)  # Align to top
+        client_credentials_layout.setAlignment(Qt.AlignmentFlag.AlignTop)  # Align to top
         client_credentials_layout.addWidget(QLabel("Client ID"))
         self.client_id_input = QLineEdit()
         client_credentials_layout.addWidget(self.client_id_input)
@@ -108,7 +108,7 @@ class AuthDialog(QDialog):
         # Certificate tab
         self.certificate_tab = QWidget()
         certificate_layout = QVBoxLayout(self.certificate_tab)
-        certificate_layout.setAlignment(Qt.AlignTop)  # Align to top
+        certificate_layout.setAlignment(Qt.AlignmentFlag.AlignTop)  # Align to top
 
         # CA Certificate
         ca_certificate_label = QLabel("CA Certificate")
@@ -118,7 +118,7 @@ class AuthDialog(QDialog):
         self.ca_certificate_input.setPlaceholderText("<Path/To/CA.pem>")
         
         ca_certificate_browse_button = QPushButton(self.certificate_tab)
-        ca_certificate_browse_button.setIcon(self.style().standardIcon(QStyle.SP_DirOpenIcon))
+        ca_certificate_browse_button.setIcon(self.style().standardIcon(QStyle.StandardPixmap.SP_DirOpenIcon))
         ca_certificate_browse_button.setIconSize(QSize(22, 24))
         ca_certificate_browse_button.setFixedSize(24, 36)
         ca_certificate_browse_button.clicked.connect(lambda: self.load_file(self.ca_certificate_input))
@@ -138,7 +138,7 @@ class AuthDialog(QDialog):
         self.client_certificate_input.setPlaceholderText("<Path/To/Client.pem>")
         
         client_certificate_browse_button = QPushButton(self.certificate_tab)
-        client_certificate_browse_button.setIcon(self.style().standardIcon(QStyle.SP_DirOpenIcon))
+        client_certificate_browse_button.setIcon(self.style().standardIcon(QStyle.StandardPixmap.SP_DirOpenIcon))
         client_certificate_browse_button.setIconSize(QSize(22, 24))
         client_certificate_browse_button.setFixedSize(24, 36)
         client_certificate_browse_button.clicked.connect(lambda: self.load_file(self.client_certificate_input))
@@ -158,7 +158,7 @@ class AuthDialog(QDialog):
         self.private_key_input.setPlaceholderText("<Path/To/Private.pem>")
         
         private_key_browse_button = QPushButton(self.certificate_tab)
-        private_key_browse_button.setIcon(self.style().standardIcon(QStyle.SP_DirOpenIcon))
+        private_key_browse_button.setIcon(self.style().standardIcon(QStyle.StandardPixmap.SP_DirOpenIcon))
         private_key_browse_button.setIconSize(QSize(22, 24))
         private_key_browse_button.setFixedSize(24, 36)
         private_key_browse_button.clicked.connect(lambda: self.load_file(self.private_key_input))
@@ -173,7 +173,7 @@ class AuthDialog(QDialog):
         private_key_password_label.setStyleSheet('QLabel { margin-top: 20px; }')
         self.private_key_password_input = QLineEdit(self.certificate_tab)
         self.private_key_password_input.setPlaceholderText("<Password1234>")
-        self.private_key_password_input.setEchoMode(QLineEdit.Password)
+        self.private_key_password_input.setEchoMode(QLineEdit.EchoMode.Password)
         certificate_layout.addWidget(private_key_password_label)
         certificate_layout.addWidget(self.private_key_password_input)
 
@@ -184,7 +184,7 @@ class AuthDialog(QDialog):
         # Basic tab
         self.basic_tab = QWidget()
         basic_layout = QVBoxLayout(self.basic_tab)
-        basic_layout.setAlignment(Qt.AlignTop)  # Align to top
+        basic_layout.setAlignment(Qt.AlignmentFlag.AlignTop)  # Align to top
         
         username_label = QLabel("Username")
         self.username_input = QLineEdit(self.basic_tab)
@@ -195,14 +195,14 @@ class AuthDialog(QDialog):
         password_label = QLabel("Password")
         self.password_input = QLineEdit(self.basic_tab)
         self.password_input.setPlaceholderText("Password")
-        self.password_input.setEchoMode(QLineEdit.Password)
+        self.password_input.setEchoMode(QLineEdit.EchoMode.Password)
         basic_layout.addWidget(password_label)
         basic_layout.addWidget(self.password_input)
         
         # Add new Proxy tab
         self.proxy_tab = QWidget()
         proxy_layout = QVBoxLayout(self.proxy_tab)
-        proxy_layout.setAlignment(Qt.AlignTop)
+        proxy_layout.setAlignment(Qt.AlignmentFlag.AlignTop)
         proxy_host_label = QLabel("Proxy Host")
         self.proxy_host_input = QLineEdit(self.proxy_tab)
         self.proxy_host_input.setPlaceholderText("Proxy Host")
@@ -221,7 +221,7 @@ class AuthDialog(QDialog):
         proxy_password_label = QLabel("Proxy Password")
         self.proxy_password_input = QLineEdit(self.proxy_tab)
         self.proxy_password_input.setPlaceholderText("Proxy Password")
-        self.proxy_password_input.setEchoMode(QLineEdit.Password)
+        self.proxy_password_input.setEchoMode(QLineEdit.EchoMode.Password)
         proxy_layout.addWidget(proxy_password_label)
         proxy_layout.addWidget(self.proxy_password_input)
         
@@ -262,17 +262,17 @@ class AuthDialog(QDialog):
         self.clear_all_button = QPushButton("Clear All", self)
         self.clear_all_button.setStyleSheet('QPushButton { background-color: #ccc; } QPushButton:hover { background-color: #ddd; }')
         self.clear_all_button.clicked.connect(self.clear_all_fields)
-        button_layout.addWidget(self.clear_all_button, alignment=Qt.AlignLeft)
+        button_layout.addWidget(self.clear_all_button, alignment=Qt.AlignmentFlag.AlignLeft)
         
         self.copy_all_button = QPushButton("Copy All", self)
         self.copy_all_button.setStyleSheet('QPushButton { background-color: #ccc; } QPushButton:hover { background-color: #ddd; }')
         self.copy_all_button.clicked.connect(self.copy_all_fields)
-        button_layout.addWidget(self.copy_all_button, alignment=Qt.AlignLeft)
+        button_layout.addWidget(self.copy_all_button, alignment=Qt.AlignmentFlag.AlignLeft)
         
         self.paste_all_button = QPushButton("Paste All", self)
         self.paste_all_button.setStyleSheet('QPushButton { background-color: #ccc; } QPushButton:hover { background-color: #ddd; }')
         self.paste_all_button.clicked.connect(self.paste_all_fields)
-        button_layout.addWidget(self.paste_all_button, alignment=Qt.AlignLeft)
+        button_layout.addWidget(self.paste_all_button, alignment=Qt.AlignmentFlag.AlignLeft)
         
         button_layout.addStretch()  # Push following widgets to the right
         self.encyption_used_label = QLabel('🔒 All plain-text fields are encrypted.')
@@ -284,7 +284,7 @@ class AuthDialog(QDialog):
         self.save_button = QPushButton('Save', self)
         self.save_button.clicked.connect(self.save)
         button_layout.addWidget(self.save_button)
-        button_layout.setAlignment(Qt.AlignRight)
+        button_layout.setAlignment(Qt.AlignmentFlag.AlignRight)
         main_layout.addLayout(button_layout)
         
         # Set the main layout to the dialog
@@ -443,7 +443,7 @@ class AuthDialog(QDialog):
         data = self.get_data()
         json_data = json.dumps(data, indent=2)
         QApplication.instance().clipboard().setText(json_data)
-        from PyQt5.QtWidgets import QMessageBox
+        from PyQt6.QtWidgets import QMessageBox
         QMessageBox.information(self, "Copy Successful", "All fields successfully copied.\nNote: Data is not copied to the system clipboard.")
 
 
@@ -451,7 +451,7 @@ class AuthDialog(QDialog):
         """Paste all auth fields data from the clipboard."""
         import json
         clipboard_text = QApplication.instance().clipboard().text()
-        from PyQt5.QtWidgets import QMessageBox
+        from PyQt6.QtWidgets import QMessageBox
         try:
             data = json.loads(clipboard_text)
             self.set_data(data)

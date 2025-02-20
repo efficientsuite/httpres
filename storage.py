@@ -1,7 +1,7 @@
 import os
 import json
 import sys
-from PyQt5.QtWidgets import (
+from PyQt6.QtWidgets import (
     QApplication, 
     QMessageBox,
     QFileDialog
@@ -116,4 +116,4 @@ def import_from_file(self, file_name=None, expand_all=True):
             sys.exit()
     
     QApplication.instance().status_bar.showMessage("📚 Collection File: " + file_name)
-    
+

@@ -1,5 +1,5 @@
-from PyQt5.QtGui import QIcon
-from PyQt5.QtWidgets import QTreeWidgetItem
+from PyQt6.QtGui import QIcon
+from PyQt6.QtWidgets import QTreeWidgetItem
 from resources import resource_path
 
 def item_to_dict(self, item):
@@ -51,11 +51,11 @@ def dict_to_tree(self, data, tree_widget):
         if item_data['type'] == 'request':
             if request_data.get('method', 'GET') == 'GET':
                 item.setIcon(0, QIcon(resource_path('images/request_get.png')))
-            elif request_data.get('method') == 'POST':
+            elif request_data.get('method', 'POST') == 'POST':
                 item.setIcon(0, QIcon(resource_path('images/request_post.png')))
-            elif request_data.get('method') == 'PUT':
+            elif request_data.get('method', 'PUT') == 'PUT':
                 item.setIcon(0, QIcon(resource_path('images/request_put.png')))
-            elif request_data.get('method') == 'DELETE':
+            elif request_data.get('method', 'DELETE') == 'DELETE':
                 item.setIcon(0, QIcon(resource_path('images/request_delete.png')))
 
         # Store the type in the first column
@@ -65,7 +65,7 @@ def dict_to_tree(self, data, tree_widget):
         if item_data['type'] == 'request':
             item.setData(2, 0, request_data)
             
-        if 'children' in item_data:  # FUCKED
+        if 'children' in item_data:
             dict_to_tree(self, item_data['children'], item)
 
 def pretty_response_code(response_code):

@@ -1,6 +1,6 @@
-from PyQt5.QtGui import QSyntaxHighlighter, QTextCharFormat, QColor
-from PyQt5.QtCore import Qt, QRegularExpression
-from PyQt5.QtWidgets import QPlainTextEdit
+from PyQt6.QtGui import QSyntaxHighlighter, QTextCharFormat, QColor
+from PyQt6.QtCore import Qt, QRegularExpression
+from PyQt6.QtWidgets import QPlainTextEdit
 
 class JsonHighlighter(QSyntaxHighlighter):
     def __init__(self, document):
@@ -55,11 +55,11 @@ class QHeadersTextEdit(QPlainTextEdit):
     # add the syntax highlighter to the text edit
     def __init__(self, parent=None):
         super().__init__(parent)
-        self.setLineWrapMode(QPlainTextEdit.NoWrap)
+        self.setLineWrapMode(QPlainTextEdit.LineWrapMode.NoWrap)
         self.highlighter = JsonHighlighter(self.document())
 
     def keyPressEvent(self, event):
-        if event.key() == Qt.Key_Tab:
+        if event.key() == Qt.Key.Key_Tab:
             # Insert two spaces instead of a tab character
             self.insertPlainText('  ')  # Two spaces
             return  # Prevent the default tab behavior
