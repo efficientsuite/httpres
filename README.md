@@ -2,15 +2,7 @@
 
 ![Splash Banner](images/splash_banner.png)
 
-
-## Pre-built Binaries:
-
-Windows x64:
-https://httpres.tor1.cdn.digitaloceanspaces.com/HttpRes.exe
-
-Linux and OSX are both supported; however, we don't provide pre-built binaries at the moment.
-
-## Compile From Source:
+## Compile:
 ```sh
 $ ./_install.sh
 $ ./_run.sh
