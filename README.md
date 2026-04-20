@@ -26,10 +26,3 @@ $ ./_update.sh
 $ pip install pyinstaller
 $ ./_build_release.sh
 ```
-
-## Website:
-https://httpres.com  
-https://efficientsuite.com
-
-## Screenshots
-![Splash Banner](https://httpres.com/images/screenshot1.png)
